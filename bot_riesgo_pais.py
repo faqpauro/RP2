@@ -101,7 +101,7 @@ def obtener_riesgo_pais():
     response = requests.get(url_riesgo_pais, headers=headers)
     if response.status_code == 200:
         datos = response.json()
-        return int(datos['ultimo'])  # Asegúrate de que 'ultimo' sea la clave correcta en la API
+        return int(datos['ultimo'])
     return None
 
 def calcular_porcentaje_cambio(nuevo_valor, ultimo_valor):
