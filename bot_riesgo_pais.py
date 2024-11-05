@@ -67,7 +67,7 @@ def leer_historico_riesgo_pais():
         data = doc.to_dict()
         fecha = data.get('fecha')
         valor = data.get('valor')
-        historico.append((datetime.strptime(fecha, '%d/%m/%Y'), valor))
+        historico.append((datetime.strptime(fecha, '%d-%m-%Y'), valor))
     return historico
 
 def guardar_valor_riesgo_pais(valor):
@@ -87,7 +87,7 @@ def guardar_valor_dia_anterior(valor):
 def guardar_historico_riesgo_pais(valor):
     """Guarda el valor del riesgo país para la fecha actual en Firestore."""
     # Obtener la fecha actual en el formato requerido
-    fecha_actual = datetime.now(pytz.timezone('America/Argentina/Buenos_Aires')).strftime('%d/%m/%Y')
+    fecha_actual = datetime.now(pytz.timezone('America/Argentina/Buenos_Aires')).strftime('%d-%m-%Y')
     
     # Referencia al documento usando la fecha como ID
     doc_ref = db.collection('historico_riesgo_pais').document(fecha_actual)
