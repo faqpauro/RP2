@@ -198,34 +198,41 @@ actualizado_hoy = False
 resumen_diario_posteado = False
 
 while True:
-    nuevo_valor = obtener_riesgo_pais()
-    
-    if nuevo_valor is not None:
-        ultimo_valor = leer_ultimo_valor_guardado()
-        if ultimo_valor is None or abs(nuevo_valor - ultimo_valor) != 0:
-            postear_tweet(nuevo_valor, ultimo_valor)
-        else:
-            print(f"El riesgo país no cambió. Valor actual: {nuevo_valor}")
-        
-    # Verificar si la hora está entre 23:50 y 23:55 para actualizar el valor del día anterior
-    hora_actual = datetime.now(pytz.timezone('America/Argentina/Buenos_Aires')).time()
-    if hora_actual.hour == 23 and 50 <= hora_actual.minute <= 55 and not actualizado_hoy:
-        actualizar_valor_dia_anterior()
-        guardar_historico_riesgo_pais(nuevo_valor)
-        actualizado_hoy = True
-        resumen_diario_posteado = False  # Permitir que se postee el resumen al día siguiente
-        print("Valor del día anterior actualizado y Valor historico agregado.")
+    # Obtener la hora y día actual en la zona horaria de Buenos Aires
+    ahora = datetime.now(pytz.timezone('America/Argentina/Buenos_Aires'))
+    hora_actual = ahora.time()
+    dia_actual = ahora.weekday()  # 0 = Lunes, 6 = Domingo
 
-    # Postear el resumen diario a las 22:00
-    dia_actual = datetime.now(pytz.timezone('America/Argentina/Buenos_Aires'))
-    if hora_actual.hour == 22 and dia_actual.weekday() < 5 and not resumen_diario_posteado:
-        postear_resumen_diario()
-        resumen_diario_posteado = True
-    
-    # Resetear el indicador al inicio de un nuevo día
-    if hora_actual.hour == 0:
-        actualizado_hoy = False
-        resumen_diario_posteado = False
+    # Verificar si está dentro del horario permitido
+    if dia_actual < 5 and (hora_actual >= datetime.strptime("08:00", "%H:%M").time() or hora_actual <= datetime.strptime("01:00", "%H:%M").time()):
+        nuevo_valor = obtener_riesgo_pais()
         
+        if nuevo_valor is not None:
+            ultimo_valor = leer_ultimo_valor_guardado()
+            if ultimo_valor is None or abs(nuevo_valor - ultimo_valor) != 0:
+                postear_tweet(nuevo_valor, ultimo_valor)
+            else:
+                print(f"El riesgo país no cambió. Valor actual: {nuevo_valor}")
+        
+        # Verificar si la hora está entre 23:50 y 23:55 para actualizar el valor del día anterior
+        if hora_actual.hour == 23 and 50 <= hora_actual.minute <= 55 and not actualizado_hoy:
+            actualizar_valor_dia_anterior()
+            guardar_historico_riesgo_pais(nuevo_valor)
+            actualizado_hoy = True
+            resumen_diario_posteado = False  # Permitir que se postee el resumen al día siguiente
+            print("Valor del día anterior actualizado y Valor historico agregado.")
+        
+        # Postear el resumen diario a las 22:00
+        if hora_actual.hour == 22 and not resumen_diario_posteado:
+            postear_resumen_diario()
+            resumen_diario_posteado = True
+        
+        # Resetear el indicador al inicio de un nuevo día
+        if hora_actual.hour == 0:
+            actualizado_hoy = False
+            resumen_diario_posteado = False
+    else:
+        print("Fuera del horario permitido. Bot en espera...")
+
     # Esperar 5 minutos antes de la próxima verificación
     time.sleep(300)  # 5 minutos = 300 segundos
