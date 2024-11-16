@@ -204,6 +204,15 @@ def generar_grafico_en_memoria(datos):
     rango_min = min_valor - margen
     rango_max = max_valor + margen
 
+    # Ajuste dinámico del paso de los ticks del eje Y
+    rango_total = rango_max - rango_min
+    if rango_total <= 1000:
+        step = 50
+    elif rango_total <= 5000:
+        step = 250
+    else:
+        step = 500
+
     # Crear el gráfico
     plt.figure(figsize=(12, 8))
     ax = plt.gca()
@@ -228,10 +237,10 @@ def generar_grafico_en_memoria(datos):
     # Establecer los límites del eje Y
     plt.ylim(rango_min, rango_max)
 
-    # Configurar los ticks del eje Y
-    tick_inicio = math.floor(min_valor / 50) * 50
-    tick_fin = math.ceil(max_valor / 50) * 50
-    ticks_y = range(tick_inicio, tick_fin + 50, 50)
+    # Configurar los ticks del eje Y dinámicamente
+    tick_inicio = math.floor(rango_min / step) * step
+    tick_fin = math.ceil(rango_max / step) * step
+    ticks_y = range(int(tick_inicio), int(tick_fin + step), int(step))
     plt.yticks(ticks_y, fontsize=12, color='white')
 
     # Configurar los ticks del eje X (solo marcas, sin etiqueta "Año")
@@ -292,7 +301,7 @@ def obtener_datos_historicos_para_grafico():
 def obtener_datos_historicos_simulados_para_grafico():
     """Simula datos históricos del riesgo país desde 1999 hasta 2024."""
     hoy = datetime.now()
-    años = range(1999, 2025)  # Desde 1999 hasta 2024
+    años = range(2014, 2025)  # Desde 2014 hasta 2024
 
     # Generar valores simulados entre 50 y 6000
     valores_simulados = [random.randint(50, 6000) for _ in años]
@@ -406,7 +415,7 @@ while True:
     dia_actual = ahora.weekday()  # 0 = Lunes, 6 = Domingo
 
     # Publicar gráfico los sábados a las 19:30
-    if dia_actual == 5 and hora_actual.hour == 16 and 0 <= hora_actual.minute <= 5 and not grafico_posteado:
+    if dia_actual == 5 and hora_actual.hour == 16 and 10 <= hora_actual.minute <= 15 and not grafico_posteado:
         postear_grafico()
         grafico_posteado = True
         
