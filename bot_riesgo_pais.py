@@ -137,6 +137,19 @@ def obtener_mejor_valor_desde_fecha(valor_actual, historico):
             break
     return mejor_fecha, mejor_valor
 
+def traducir_fecha(fecha):
+    """Traduce el nombre del mes en una fecha."""
+    meses = {
+        "January": "enero", "February": "febrero", "March": "marzo", "April": "abril",
+        "May": "mayo", "June": "junio", "July": "julio", "August": "agosto",
+        "September": "septiembre", "October": "octubre", "November": "noviembre", "December": "diciembre"
+    }
+    # Formatear la fecha y traducir el mes
+    fecha_str = fecha.strftime("%d de %B")
+    for mes_ing, mes_esp in meses.items():
+        fecha_str = fecha_str.replace(mes_ing, mes_esp)
+    return fecha_str
+
 def generar_grafico_en_memoria(datos):
     """Genera un gráfico visualmente mejorado de los últimos 10 años de riesgo país y lo guarda en memoria."""
     # Ordenar los datos por año
@@ -146,7 +159,7 @@ def generar_grafico_en_memoria(datos):
 
     # Obtener la fecha actual para mostrarla en el título
     hoy = datetime.now()
-    fecha_actual = hoy.strftime("%d de %B")  # Ejemplo: "16 de noviembre"
+    fecha_actual = traducir_fecha(hoy)
     año_actual = hoy.year
 
     # Crear el gráfico
