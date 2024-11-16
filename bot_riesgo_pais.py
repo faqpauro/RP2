@@ -201,7 +201,7 @@ def generar_grafico_en_memoria(datos):
 
     # Agregar un margen para que los puntos no estén pegados al borde
     margen = (max_valor - min_valor) * 0.1  # 10% del rango de datos
-    rango_min = min_valor - margen
+    rango_min = max(0, min_valor - margen)  # Asegurar que el rango mínimo no sea negativo
     rango_max = max_valor + margen
 
     # Ajuste dinámico del paso de los ticks del eje Y
@@ -251,7 +251,7 @@ def generar_grafico_en_memoria(datos):
     for año in años:
         presidente = presidentes.get(año, "N/A")
         nombre, apellido = presidente.split(" ", 1) if " " in presidente else (presidente, "")
-        plt.text(año, rango_min - (margen * 0.8), f"{nombre}\n{apellido}", 
+        plt.text(año, rango_min - (margen * 0.2), f"{nombre}\n{apellido}", 
                  fontsize=10, color='white', ha='center', va='top')
 
     # Rejilla
@@ -279,6 +279,7 @@ def generar_grafico_en_memoria(datos):
     plt.close()
     buffer.seek(0)  # Volver al inicio del buffer
     return buffer
+
     
 def obtener_datos_historicos_para_grafico():
     """Obtiene los datos históricos necesarios para el gráfico."""
@@ -415,7 +416,7 @@ while True:
     dia_actual = ahora.weekday()  # 0 = Lunes, 6 = Domingo
 
     # Publicar gráfico los sábados a las 19:30
-    if dia_actual == 5 and hora_actual.hour == 16 and 10 <= hora_actual.minute <= 15 and not grafico_posteado:
+    if dia_actual == 5 and hora_actual.hour == 16 and 14 <= hora_actual.minute <= 19 and not grafico_posteado:
         postear_grafico()
         grafico_posteado = True
         
