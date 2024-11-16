@@ -315,6 +315,10 @@ def postear_grafico():
     # Subir la imagen con `api`
     media = api.media_upload(filename="grafico.png", file=imagen_buffer)
 
+    # Obtener la fecha actual para mostrarla en el título
+    hoy = datetime.now()
+    fecha_actual = traducir_fecha(hoy)
+    
     texto = (
         f"📊 #RiesgoPaís: Últimos 10 años\n"
         f"📅 Fecha: {fecha_actual}\n"
@@ -402,7 +406,7 @@ while True:
     dia_actual = ahora.weekday()  # 0 = Lunes, 6 = Domingo
 
     # Publicar gráfico los sábados a las 19:30
-    if dia_actual == 5 and hora_actual.hour == 15 and 55 <= hora_actual.minute <= 59 and not grafico_posteado:
+    if dia_actual == 5 and hora_actual.hour == 16 and 0 <= hora_actual.minute <= 5 and not grafico_posteado:
         postear_grafico()
         grafico_posteado = True
         
