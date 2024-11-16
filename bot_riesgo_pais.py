@@ -206,9 +206,8 @@ def generar_grafico_en_memoria(datos):
     plt.title(f"Riesgo País - Últimos 10 Años\n({fecha_actual} de cada año)",
               fontsize=18, fontweight='bold', color='white')
 
-    # Etiquetas de ejes
+    # Etiquetas del eje Y
     plt.ylabel("Valor Riesgo País", fontsize=14, fontweight='bold', color='white')
-    plt.xlabel("Año", fontsize=14, fontweight='bold', color='white')
 
     # Establecer los límites del eje Y
     plt.ylim(rango_min, rango_max)
@@ -219,8 +218,9 @@ def generar_grafico_en_memoria(datos):
     ticks_y = range(tick_inicio, tick_fin + 50, 50)
     plt.yticks(ticks_y, fontsize=12, color='white')
 
-    # Configurar etiquetas de eje X
+    # Configurar los ticks del eje X (solo marcas, sin etiqueta "Año")
     plt.xticks(años, fontsize=12, color='white')
+    ax.xaxis.label.set_visible(False)  # Ocultar texto del eje X
 
     # Agregar nombres de presidentes debajo de cada año
     for año in años:
@@ -383,7 +383,7 @@ while True:
     dia_actual = ahora.weekday()  # 0 = Lunes, 6 = Domingo
 
     # Publicar gráfico los sábados a las 19:30
-    if dia_actual == 5 and hora_actual.hour == 15 and 43 <= hora_actual.minute <= 48 and not grafico_posteado:
+    if dia_actual == 5 and hora_actual.hour == 15 and 46 <= hora_actual.minute <= 51 and not grafico_posteado:
         postear_grafico()
         grafico_posteado = True
         
