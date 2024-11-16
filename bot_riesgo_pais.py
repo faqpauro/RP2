@@ -207,7 +207,6 @@ def generar_grafico_en_memoria(datos):
               fontsize=18, fontweight='bold', color='white')
 
     # Etiquetas de ejes
-    plt.xlabel("Año", fontsize=14, fontweight='bold', color='white')
     plt.ylabel("Valor Riesgo País", fontsize=14, fontweight='bold', color='white')
 
     # Establecer los límites del eje Y
@@ -222,10 +221,13 @@ def generar_grafico_en_memoria(datos):
     # Configurar etiquetas de eje X
     plt.xticks(años, fontsize=12, color='white')
 
-    # Agregar nombres de presidentes debajo de cada año
+    # Agregar nombres de presidentes en dos líneas debajo de cada año
     for año in años:
         presidente = presidentes.get(año, "N/A")
-        plt.text(año, rango_min - (margen * 0.3), presidente, fontsize=10, color='white',
+        nombre, apellido = presidente.split(" ", 1) if " " in presidente else (presidente, "")
+        plt.text(año, rango_min - (margen * 0.4), nombre, fontsize=10, color='white',
+                 ha='center', va='top', rotation=90)
+        plt.text(año, rango_min - (margen * 0.6), apellido, fontsize=10, color='white',
                  ha='center', va='top', rotation=90)
 
     # Rejilla
@@ -382,7 +384,7 @@ while True:
     dia_actual = ahora.weekday()  # 0 = Lunes, 6 = Domingo
 
     # Publicar gráfico los sábados a las 19:30
-    if dia_actual == 5 and hora_actual.hour == 15 and 31 <= hora_actual.minute <= 36 and not grafico_posteado:
+    if dia_actual == 5 and hora_actual.hour == 15 and 36 <= hora_actual.minute <= 41 and not grafico_posteado:
         postear_grafico()
         grafico_posteado = True
         
