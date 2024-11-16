@@ -303,15 +303,23 @@ def obtener_datos_historicos_para_grafico():
     return datos
 
 def obtener_datos_historicos_simulados_para_grafico():
-    """Simula datos históricos del riesgo país desde 1999 hasta 2024."""
-    hoy = datetime.now()
-    años = range(2014, 2025)  # Desde 2014 hasta 2024
+    """Simula datos históricos reales del riesgo país desde 2014 hasta 2024."""
+    datos_reales = [
+        ("16-11-2024", 769),
+        ("16-11-2023", 2397),
+        ("16-11-2022", 2346),
+        ("16-11-2021", 1707),
+        ("16-11-2020", 1323),
+        ("16-11-2019", 2442),
+        ("16-11-2018", 656),
+        ("16-11-2017", 373),
+        ("16-11-2016", 487),
+        ("16-11-2015", 485),
+        ("16-11-2014", 664),
+    ]
 
-    # Generar valores simulados entre 50 y 6000
-    valores_simulados = [random.randint(50, 6000) for _ in años]
-
-    # Crear datos ficticios con fechas
-    datos = [(datetime(año, hoy.month, hoy.day), valor) for año, valor in zip(años, valores_simulados)]
+    # Convertir las fechas en objetos datetime y mantener los valores reales
+    datos = [(datetime.strptime(fecha, "%d-%m-%Y"), valor) for fecha, valor in datos_reales]
     return datos
 
 def postear_grafico():
