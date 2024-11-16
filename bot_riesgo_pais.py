@@ -9,6 +9,7 @@ import os
 import matplotlib.pyplot as plt
 from io import BytesIO
 from datetime import datetime, timedelta
+import locale
 
 # Definir las credenciales usando las variables de entorno
 firebase_cred = {
@@ -51,6 +52,9 @@ headers = {
     "x-rapidapi-key": "a2df4bf8demsh97afe8342a3d223p118bd5jsn7414c6a2d7b7",
     "x-rapidapi-host": "riesgo-pais.p.rapidapi.com"
 }
+
+# Configurar el idioma a español
+locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
 
 def leer_ultimo_valor_guardado():
     doc_ref = db.collection('riesgo_pais').document('ultimo_valor')
@@ -142,24 +146,33 @@ def generar_grafico_en_memoria(datos):
 
     # Obtener la fecha actual para mostrarla en el título
     hoy = datetime.now()
-    fecha_actual = hoy.strftime("%d de %B")  # Ejemplo: "16 de Noviembre"
+    fecha_actual = hoy.strftime("%d de %B")  # Ejemplo: "16 de noviembre"
+    año_actual = hoy.year
 
     # Crear el gráfico
     plt.figure(figsize=(12, 8))
     plt.plot(años, valores, marker='o', color='#1f77b4', linestyle='-', linewidth=2.5, label="Riesgo País")
-    plt.title(f"📊 Riesgo País - Últimos 10 Años\n(Al {fecha_actual} de cada año)", fontsize=16, fontweight='bold')
+    plt.title(f"Riesgo País - Últimos 10 Años\n({fecha_actual} de cada año)", fontsize=16, fontweight='bold')
     plt.xlabel("Año", fontsize=14, fontweight='bold')
-    plt.ylabel("Valor", fontsize=14, fontweight='bold')
+    plt.ylabel("Valor Riesgo País", fontsize=14, fontweight='bold')
     plt.xticks(años, fontsize=12)
-    plt.yticks(fontsize=12)
+    plt.yticks(fontsize=14)  # Aumentar el tamaño de los números en el eje Y
     plt.grid(color='gray', linestyle='--', linewidth=0.5, alpha=0.7)
     plt.legend(fontsize=12, loc='upper left')
 
     # Agregar etiquetas con los valores en cada punto
-    for i, valor in enumerate(valores):
-        plt.annotate(f"{valor}", (años[i], valores[i]), 
-                     textcoords="offset points", xytext=(0, 10), ha='center',
-                     fontsize=10, bbox=dict(boxstyle="round,pad=0.3", edgecolor='gray', facecolor='white', alpha=0.8))
+    for i, (año, valor) in enumerate(zip(años, valores)):
+        if año == año_actual:
+            # Resaltar el año actual
+            plt.annotate(f"{valor}", (años[i], valores[i]), 
+                         textcoords="offset points", xytext=(0, 10), ha='center',
+                         fontsize=14, color='red',  # Más grande y en color rojo
+                         bbox=dict(boxstyle="round,pad=0.3", edgecolor='darkred', facecolor='lightyellow', alpha=0.9))
+        else:
+            # Estilo normal para los demás puntos
+            plt.annotate(f"{valor}", (años[i], valores[i]), 
+                         textcoords="offset points", xytext=(0, 10), ha='center',
+                         fontsize=12, bbox=dict(boxstyle="round,pad=0.3", edgecolor='gray', facecolor='white', alpha=0.8))
 
     # Cambiar fondo del gráfico
     plt.gca().set_facecolor('#f9f9f9')  # Fondo gris claro
@@ -300,7 +313,7 @@ while True:
     dia_actual = ahora.weekday()  # 0 = Lunes, 6 = Domingo
 
     # Publicar gráfico los sábados a las 19:30
-    if dia_actual == 5 and hora_actual.hour == 14 and 49 <= hora_actual.minute <= 54 and not grafico_posteado:
+    if dia_actual == 5 and hora_actual.hour == 15 and 1 <= hora_actual.minute <= 6 and not grafico_posteado:
         postear_grafico()
         grafico_posteado = True
         
