@@ -160,11 +160,14 @@ def generar_grafico_en_memoria(datos):
     fecha_actual = traducir_fecha(hoy)
     año_actual = hoy.year
 
-    # Determinar rango dinámico del eje Y
+    # Determinar el valor mínimo y máximo de los datos
     min_valor = min(valores)
     max_valor = max(valores)
-    rango_min = math.floor(min_valor / 50) * 50  # Múltiplo inferior más cercano de 50
-    rango_max = math.ceil(max_valor / 50) * 50 + 50  # Múltiplo superior más cercano de 50 + buffer
+
+    # Agregar un margen para que los puntos no estén pegados al borde
+    margen = (max_valor - min_valor) * 0.1  # 10% del rango de datos
+    rango_min = min_valor - margen
+    rango_max = max_valor + margen
 
     # Crear el gráfico
     plt.figure(figsize=(12, 8))
@@ -188,9 +191,15 @@ def generar_grafico_en_memoria(datos):
     plt.xlabel("Año", fontsize=14, fontweight='bold', color='white')
     plt.ylabel("Valor Riesgo País", fontsize=14, fontweight='bold', color='white')
 
-    # Configurar el eje Y con el rango dinámico
-    rango_y = range(rango_min, rango_max + 1, 50)
-    plt.yticks(rango_y, fontsize=12, color='white')
+    # Establecer los límites del eje Y
+    plt.ylim(rango_min, rango_max)
+
+    # Configurar los ticks del eje Y
+    # Calculamos ticks en múltiplos de 50 dentro del rango
+    tick_inicio = math.floor(min_valor / 50) * 50
+    tick_fin = math.ceil(max_valor / 50) * 50
+    ticks_y = range(tick_inicio, tick_fin + 50, 50)
+    plt.yticks(ticks_y, fontsize=12, color='white')
 
     # Configurar etiquetas de eje X
     plt.xticks(años, fontsize=12, color='white')
@@ -220,7 +229,6 @@ def generar_grafico_en_memoria(datos):
     plt.close()
     buffer.seek(0)  # Volver al inicio del buffer
     return buffer
-
 def obtener_datos_historicos_para_grafico():
     """Obtiene los datos históricos necesarios para el gráfico."""
     historico = leer_historico_riesgo_pais()
@@ -349,7 +357,7 @@ while True:
     dia_actual = ahora.weekday()  # 0 = Lunes, 6 = Domingo
 
     # Publicar gráfico los sábados a las 19:30
-    if dia_actual == 5 and hora_actual.hour == 15 and 18 <= hora_actual.minute <= 23 and not grafico_posteado:
+    if dia_actual == 5 and hora_actual.hour == 15 and 26 <= hora_actual.minute <= 31 and not grafico_posteado:
         postear_grafico()
         grafico_posteado = True
         
