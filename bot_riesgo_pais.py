@@ -9,6 +9,7 @@ import os
 import matplotlib.pyplot as plt
 from io import BytesIO
 from datetime import datetime, timedelta
+import math
 
 # Definir las credenciales usando las variables de entorno
 firebase_cred = {
@@ -159,6 +160,12 @@ def generar_grafico_en_memoria(datos):
     fecha_actual = traducir_fecha(hoy)
     año_actual = hoy.year
 
+    # Determinar rango dinámico del eje Y
+    min_valor = min(valores)
+    max_valor = max(valores)
+    rango_min = math.floor(min_valor / 50) * 50  # Múltiplo inferior más cercano de 50
+    rango_max = math.ceil(max_valor / 50) * 50 + 50  # Múltiplo superior más cercano de 50 + buffer
+
     # Crear el gráfico
     plt.figure(figsize=(12, 8))
     ax = plt.gca()
@@ -181,9 +188,8 @@ def generar_grafico_en_memoria(datos):
     plt.xlabel("Año", fontsize=14, fontweight='bold', color='white')
     plt.ylabel("Valor Riesgo País", fontsize=14, fontweight='bold', color='white')
 
-    # Configurar el eje Y para que muestre incrementos de 50
-    max_valor = max(valores)
-    rango_y = range(0, max_valor + 100, 50)  # Ajusta el rango del eje Y
+    # Configurar el eje Y con el rango dinámico
+    rango_y = range(rango_min, rango_max + 1, 50)
     plt.yticks(rango_y, fontsize=12, color='white')
 
     # Configurar etiquetas de eje X
