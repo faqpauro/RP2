@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 from io import BytesIO
 from datetime import datetime, timedelta
 import math
+import random
 
 # Definir las credenciales usando las variables de entorno
 firebase_cred = {
@@ -152,6 +153,21 @@ def generar_grafico_en_memoria(datos):
     
     # Lista de presidentes por año (ajusta según los datos reales)
     presidentes = {
+        1998: "Carlos Menem",
+        1999: "Carlos Menem",
+        2000: "Fernando de la Rúa",
+        2001: "Fernando de la Rúa",
+        2002: "Eduardo Duhalde",
+        2003: "Eduardo Duhalde",
+        2004: "Néstor Kirchner",
+        2005: "Néstor Kirchner",
+        2006: "Néstor Kirchner",
+        2007: "Néstor Kirchner",
+        2008: "Cristina Fernández",
+        2009: "Cristina Fernández",
+        2010: "Cristina Fernández",
+        2011: "Cristina Fernández",
+        2012: "Cristina Fernández",
         2013: "Cristina Fernández",
         2014: "Cristina Fernández",
         2015: "Cristina Fernández",
@@ -274,11 +290,12 @@ def obtener_datos_historicos_para_grafico():
     return datos
 
 def obtener_datos_historicos_simulados_para_grafico():
-    """Simula datos históricos para probar la generación de gráficos."""
-    from datetime import datetime
+    """Simula datos históricos del riesgo país desde 1999 hasta 2024."""
     hoy = datetime.now()
-    años = range(hoy.year - 10, hoy.year + 1)
-    valores_simulados = [772, 800, 819, 850, 850, 859, 870, 933, 955, 955, 984]  # Ejemplo de datos
+    años = range(1999, 2025)  # Desde 1999 hasta 2024
+
+    # Generar valores simulados entre 50 y 6000
+    valores_simulados = [random.randint(50, 6000) for _ in años]
 
     # Crear datos ficticios con fechas
     datos = [(datetime(año, hoy.month, hoy.day), valor) for año, valor in zip(años, valores_simulados)]
@@ -299,9 +316,11 @@ def postear_grafico():
     media = api.media_upload(filename="grafico.png", file=imagen_buffer)
 
     texto = (
-        "📊 #RiesgoPaís: Últimos 10 años\n" +
+        f"📊 #RiesgoPaís: Últimos 10 años\n"
+        f"📅 Fecha: {fecha_actual}\n"
         "🇦🇷 #Argentina #Economía"
     )
+    
     client.create_tweet(text=texto, media_ids=[media.media_id])
     print("Tweet con gráfico enviado.")  
 
@@ -383,7 +402,7 @@ while True:
     dia_actual = ahora.weekday()  # 0 = Lunes, 6 = Domingo
 
     # Publicar gráfico los sábados a las 19:30
-    if dia_actual == 5 and hora_actual.hour == 15 and 46 <= hora_actual.minute <= 51 and not grafico_posteado:
+    if dia_actual == 5 and hora_actual.hour == 15 and 55 <= hora_actual.minute <= 59 and not grafico_posteado:
         postear_grafico()
         grafico_posteado = True
         
