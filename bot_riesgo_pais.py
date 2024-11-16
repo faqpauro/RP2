@@ -285,7 +285,7 @@ while True:
     dia_actual = ahora.weekday()  # 0 = Lunes, 6 = Domingo
 
     # Publicar gráfico los sábados a las 19:30
-    if dia_actual == 5 and hora_actual.hour == 14 and 20 <= hora_actual.minute <= 25 and not grafico_posteado:
+    if dia_actual == 5 and hora_actual.hour == 14 and 40 <= hora_actual.minute <= 45 and not grafico_posteado:
         postear_grafico()
         grafico_posteado = True
         
