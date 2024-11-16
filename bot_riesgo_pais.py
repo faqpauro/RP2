@@ -42,6 +42,9 @@ ACCESS_TOKEN_SECRET = os.environ.get('ACCESS_TOKEN_SECRET')
 # Inicializa el cliente de Tweepy con el Bearer Token
 client = tweepy.Client(BEARER_TOKEN, CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
 
+auth = tweepy.OAuth1UserHandler(CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
+api = tweepy.API(auth)
+
 # URL y cabeceras de la API de RapidAPI para riesgo país
 url_riesgo_pais = "https://riesgo-pais.p.rapidapi.com/api/riesgopais"
 headers = {
@@ -172,9 +175,21 @@ def obtener_datos_historicos_para_grafico():
     
     return datos
 
+def obtener_datos_historicos_simulados_para_grafico():
+    """Simula datos históricos para probar la generación de gráficos."""
+    from datetime import datetime
+    hoy = datetime.now()
+    años = range(hoy.year - 10, hoy.year + 1)
+    valores_simulados = [772, 800, 819, 850, 850, 859, 870, 933, 955, 955, 984]  # Ejemplo de datos
+
+    # Crear datos ficticios con fechas
+    datos = [(datetime(año, hoy.month, hoy.day), valor) for año, valor in zip(años, valores_simulados)]
+    return datos
+
 def postear_grafico():
     """Genera y postea un gráfico con los datos históricos de riesgo país."""
-    datos = obtener_datos_historicos_para_grafico()
+    # datos = obtener_datos_historicos_para_grafico()
+    datos = obtener_datos_historicos_simulados_para_grafico()
     if not datos:
         print("No hay suficientes datos para generar el gráfico.")
         return
@@ -182,13 +197,12 @@ def postear_grafico():
     # Generar gráfico en memoria
     imagen_buffer = generar_grafico_en_memoria(datos)
 
-    # Subir la imagen a Twitter directamente desde la memoria
-    media = client.media_upload(filename="grafico.png", file=imagen_buffer)
+    # Subir la imagen con `api`
+    media = api.media_upload(filename="grafico.png", file=imagen_buffer)
 
     texto = (
-        "📊 #RiesgoPaís: Evolución de los últimos 10 años\n"
-        "Datos al 📅 " + datetime.now(pytz.timezone('America/Argentina/Buenos_Aires')).strftime('%d/%m/%Y') +
-        "\n🇦🇷 #Argentina #Economía"
+        "📊 #RiesgoPaís: Últimos 10 años\n" +
+        "🇦🇷 #Argentina #Economía"
     )
     client.create_tweet(text=texto, media_ids=[media.media_id])
     print("Tweet con gráfico enviado.")  
