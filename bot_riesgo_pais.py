@@ -134,25 +134,40 @@ def obtener_mejor_valor_desde_fecha(valor_actual, historico):
     return mejor_fecha, mejor_valor
 
 def generar_grafico_en_memoria(datos):
-    """Genera un gráfico de los últimos 10 años de riesgo país y lo guarda en memoria."""
+    """Genera un gráfico visualmente mejorado de los últimos 10 años de riesgo país y lo guarda en memoria."""
     # Ordenar los datos por año
     datos_ordenados = sorted(datos, key=lambda x: x[0])
     años = [d[0].year for d in datos_ordenados]
     valores = [d[1] for d in datos_ordenados]
 
+    # Obtener la fecha actual para mostrarla en el título
+    hoy = datetime.now()
+    fecha_actual = hoy.strftime("%d de %B")  # Ejemplo: "16 de Noviembre"
+
     # Crear el gráfico
-    plt.figure(figsize=(10, 6))
-    plt.plot(años, valores, marker='o', linestyle='-', label="Riesgo País")
-    plt.title("Riesgo País - Últimos 10 Años", fontsize=14)
-    plt.xlabel("Año", fontsize=12)
-    plt.ylabel("Valor", fontsize=12)
-    plt.xticks(años, rotation=45)
-    plt.grid(True)
-    plt.legend()
+    plt.figure(figsize=(12, 8))
+    plt.plot(años, valores, marker='o', color='#1f77b4', linestyle='-', linewidth=2.5, label="Riesgo País")
+    plt.title(f"📊 Riesgo País - Últimos 10 Años\n(Al {fecha_actual} de cada año)", fontsize=16, fontweight='bold')
+    plt.xlabel("Año", fontsize=14, fontweight='bold')
+    plt.ylabel("Valor", fontsize=14, fontweight='bold')
+    plt.xticks(años, fontsize=12)
+    plt.yticks(fontsize=12)
+    plt.grid(color='gray', linestyle='--', linewidth=0.5, alpha=0.7)
+    plt.legend(fontsize=12, loc='upper left')
+
+    # Agregar etiquetas con los valores en cada punto
+    for i, valor in enumerate(valores):
+        plt.annotate(f"{valor}", (años[i], valores[i]), 
+                     textcoords="offset points", xytext=(0, 10), ha='center',
+                     fontsize=10, bbox=dict(boxstyle="round,pad=0.3", edgecolor='gray', facecolor='white', alpha=0.8))
+
+    # Cambiar fondo del gráfico
+    plt.gca().set_facecolor('#f9f9f9')  # Fondo gris claro
+    plt.gcf().set_facecolor('#ffffff')  # Fondo blanco fuera del gráfico
 
     # Guardar la imagen en un objeto BytesIO
     buffer = BytesIO()
-    plt.savefig(buffer, format='png', bbox_inches='tight')
+    plt.savefig(buffer, format='png', bbox_inches='tight', dpi=100)
     plt.close()
     buffer.seek(0)  # Volver al inicio del buffer
     return buffer
@@ -285,7 +300,7 @@ while True:
     dia_actual = ahora.weekday()  # 0 = Lunes, 6 = Domingo
 
     # Publicar gráfico los sábados a las 19:30
-    if dia_actual == 5 and hora_actual.hour == 14 and 40 <= hora_actual.minute <= 45 and not grafico_posteado:
+    if dia_actual == 5 and hora_actual.hour == 14 and 49 <= hora_actual.minute <= 54 and not grafico_posteado:
         postear_grafico()
         grafico_posteado = True
         
