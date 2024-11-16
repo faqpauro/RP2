@@ -9,7 +9,6 @@ import os
 import matplotlib.pyplot as plt
 from io import BytesIO
 from datetime import datetime, timedelta
-import locale
 
 # Definir las credenciales usando las variables de entorno
 firebase_cred = {
@@ -52,9 +51,6 @@ headers = {
     "x-rapidapi-key": "a2df4bf8demsh97afe8342a3d223p118bd5jsn7414c6a2d7b7",
     "x-rapidapi-host": "riesgo-pais.p.rapidapi.com"
 }
-
-# Configurar el idioma a español
-locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')
 
 def leer_ultimo_valor_guardado():
     doc_ref = db.collection('riesgo_pais').document('ultimo_valor')
@@ -326,7 +322,7 @@ while True:
     dia_actual = ahora.weekday()  # 0 = Lunes, 6 = Domingo
 
     # Publicar gráfico los sábados a las 19:30
-    if dia_actual == 5 and hora_actual.hour == 15 and 1 <= hora_actual.minute <= 6 and not grafico_posteado:
+    if dia_actual == 5 and hora_actual.hour == 15 and 4 <= hora_actual.minute <= 9 and not grafico_posteado:
         postear_grafico()
         grafico_posteado = True
         
