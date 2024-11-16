@@ -243,12 +243,12 @@ def generar_grafico_en_memoria(datos):
     ticks_y = range(int(tick_inicio), int(tick_fin + step), int(step))
     plt.yticks(ticks_y, fontsize=12, color='white')
 
-    # Configurar los ticks del eje X (solo marcas, sin etiqueta "Año")
-    plt.xticks(años, fontsize=12, color='white')
+    # Configurar los ticks del eje X (años en negrita)
+    plt.xticks(años, fontsize=12, fontweight='bold', color='white')
     ax.xaxis.label.set_visible(False)  # Ocultar texto del eje X
 
     # Posición fija para los nombres de presidentes debajo del gráfico
-    posicion_presidentes = rango_min - (margen * 0.5)
+    posicion_presidentes = rango_min - (margen * 0.8)  # Mayor separación
 
     # Agregar nombres de presidentes debajo de cada año
     for año in años:
@@ -418,7 +418,7 @@ while True:
     dia_actual = ahora.weekday()  # 0 = Lunes, 6 = Domingo
 
     # Publicar gráfico los sábados a las 19:30
-    if dia_actual == 5 and hora_actual.hour == 16 and 17 <= hora_actual.minute <= 22 and not grafico_posteado:
+    if dia_actual == 5 and hora_actual.hour == 16 and 23 <= hora_actual.minute <= 28 and not grafico_posteado:
         postear_grafico()
         grafico_posteado = True
         
