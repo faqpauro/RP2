@@ -147,7 +147,8 @@ def traducir_fecha(fecha):
     return fecha_str
 
 def generar_grafico_en_memoria(datos):
-    """Genera un gráfico visualmente mejorado de los últimos 10 años de riesgo país y lo guarda en memoria."""
+    """Genera un gráfico visualmente moderno para los últimos 10 años de riesgo país."""
+    
     # Ordenar los datos por año
     datos_ordenados = sorted(datos, key=lambda x: x[0])
     años = [d[0].year for d in datos_ordenados]
@@ -160,32 +161,46 @@ def generar_grafico_en_memoria(datos):
 
     # Crear el gráfico
     plt.figure(figsize=(12, 8))
-    plt.plot(años, valores, marker='o', color='#1f77b4', linestyle='-', linewidth=2.5, label="Riesgo País")
-    plt.title(f"Riesgo País - Últimos 10 Años\n({fecha_actual} de cada año)", fontsize=16, fontweight='bold')
-    plt.xlabel("Año", fontsize=14, fontweight='bold')
-    plt.ylabel("Valor Riesgo País", fontsize=14, fontweight='bold')
-    plt.xticks(años, fontsize=12)
-    plt.yticks(fontsize=14)  # Aumentar el tamaño de los números en el eje Y
-    plt.grid(color='gray', linestyle='--', linewidth=0.5, alpha=0.7)
-    plt.legend(fontsize=12, loc='upper left')
+    ax = plt.gca()
+
+    # Fondo moderno
+    ax.set_facecolor('#2b2b2b')  # Fondo oscuro
+    plt.gcf().set_facecolor('#2b2b2b')  # Fondo completo
+
+    # Línea de riesgo país
+    plt.plot(años, valores, marker='o', color='#FF5733', linestyle='-', linewidth=3, label="Riesgo País")
+
+    # Sombreado suave debajo de la línea
+    plt.fill_between(años, valores, color='#FF5733', alpha=0.1)
+
+    # Título moderno
+    plt.title(f"Riesgo País - Últimos 10 Años\n({fecha_actual} de cada año)",
+              fontsize=18, fontweight='bold', color='white')
+
+    # Etiquetas de ejes
+    plt.xlabel("Año", fontsize=14, fontweight='bold', color='white')
+    plt.ylabel("Valor", fontsize=14, fontweight='bold', color='white')
+
+    # Ejes y marcas
+    plt.xticks(años, fontsize=12, color='white')
+    plt.yticks(fontsize=12, color='white')
+    plt.grid(color='gray', linestyle='--', linewidth=0.5, alpha=0.5)
 
     # Agregar etiquetas con los valores en cada punto
     for i, (año, valor) in enumerate(zip(años, valores)):
         if año == año_actual:
-            # Resaltar el año actual
-            plt.annotate(f"{valor}", (años[i], valores[i]), 
+            plt.annotate(f"{valor}", (años[i], valores[i]),
                          textcoords="offset points", xytext=(0, 10), ha='center',
-                         fontsize=14, color='red',  # Más grande y en color rojo
-                         bbox=dict(boxstyle="round,pad=0.3", edgecolor='darkred', facecolor='lightyellow', alpha=0.9))
+                         fontsize=14, color='#FFC300',  # Resaltar en amarillo brillante
+                         bbox=dict(boxstyle="round,pad=0.3", edgecolor='#FF5733', facecolor='#2b2b2b', alpha=0.9))
         else:
-            # Estilo normal para los demás puntos
-            plt.annotate(f"{valor}", (años[i], valores[i]), 
+            plt.annotate(f"{valor}", (años[i], valores[i]),
                          textcoords="offset points", xytext=(0, 10), ha='center',
-                         fontsize=12, bbox=dict(boxstyle="round,pad=0.3", edgecolor='gray', facecolor='white', alpha=0.8))
+                         fontsize=12, color='white',
+                         bbox=dict(boxstyle="round,pad=0.3", edgecolor='gray', facecolor='#2b2b2b', alpha=0.8))
 
-    # Cambiar fondo del gráfico
-    plt.gca().set_facecolor('#f9f9f9')  # Fondo gris claro
-    plt.gcf().set_facecolor('#ffffff')  # Fondo blanco fuera del gráfico
+    # Leyenda moderna
+    plt.legend(fontsize=12, loc='upper left', facecolor='#2b2b2b', edgecolor='white', labelcolor='white')
 
     # Guardar la imagen en un objeto BytesIO
     buffer = BytesIO()
@@ -322,7 +337,7 @@ while True:
     dia_actual = ahora.weekday()  # 0 = Lunes, 6 = Domingo
 
     # Publicar gráfico los sábados a las 19:30
-    if dia_actual == 5 and hora_actual.hour == 15 and 4 <= hora_actual.minute <= 9 and not grafico_posteado:
+    if dia_actual == 5 and hora_actual.hour == 15 and 11 <= hora_actual.minute <= 16 and not grafico_posteado:
         postear_grafico()
         grafico_posteado = True
         
