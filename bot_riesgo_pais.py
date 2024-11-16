@@ -194,6 +194,7 @@ def generar_grafico_en_memoria(datos):
     hoy = datetime.now()
     fecha_actual = traducir_fecha(hoy)
     año_actual = hoy.year
+    rango_años = f"{min(años)}-{max(años)}"  # Determinar el rango dinámico de años
 
     # Determinar el valor mínimo y máximo de los datos
     min_valor = min(valores)
@@ -228,7 +229,7 @@ def generar_grafico_en_memoria(datos):
     plt.fill_between(años, valores, color='#FF5733', alpha=0.1)
 
     # Título moderno
-    plt.title(f"Riesgo País - Últimos 10 Años\n({fecha_actual} de cada año)",
+    plt.title(f"Riesgo País ({rango_años})\n({fecha_actual} de cada año)",
               fontsize=18, fontweight='bold', color='white')
 
     # Etiquetas del eje Y
@@ -327,18 +328,20 @@ def postear_grafico():
     # Subir la imagen con `api`
     media = api.media_upload(filename="grafico.png", file=imagen_buffer)
 
-    # Obtener la fecha actual para mostrarla en el título
+    # Obtener la fecha actual y los rangos de años
     hoy = datetime.now()
     fecha_actual = traducir_fecha(hoy)
+    años = [dato[0].year for dato in datos]  # Extraer los años de los datos
+    rango_años = f"{min(años)}-{max(años)}"  # Determinar el rango dinámicamente
     
     texto = (
-        f"📊 #RiesgoPaís: Últimos 10 años\n"
+        f"📊 #RiesgoPaís: {rango_años}\n"
         f"📅 Fecha: {fecha_actual}\n"
         "🇦🇷 #Argentina #Economía"
     )
     
     client.create_tweet(text=texto, media_ids=[media.media_id])
-    print("Tweet con gráfico enviado.")  
+    print("Tweet con gráfico enviado.")    
 
 def postear_tweet(nuevo_valor, ultimo_valor):
     """Postea un tweet indicando si el riesgo país subió o bajó."""
@@ -418,7 +421,7 @@ while True:
     dia_actual = ahora.weekday()  # 0 = Lunes, 6 = Domingo
 
     # Publicar gráfico los sábados a las 19:30
-    if dia_actual == 5 and hora_actual.hour == 16 and 23 <= hora_actual.minute <= 28 and not grafico_posteado:
+    if dia_actual == 5 and hora_actual.hour == 16 and 33 <= hora_actual.minute <= 38 and not grafico_posteado:
         postear_grafico()
         grafico_posteado = True
         
