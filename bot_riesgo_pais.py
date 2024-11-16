@@ -152,9 +152,9 @@ def generar_grafico_en_memoria(datos):
     
     # Lista de presidentes por año (ajusta según los datos reales)
     presidentes = {
-        2013: "Cristina F. de K.",
-        2014: "Cristina F. de K.",
-        2015: "Cristina F. de K.",
+        2013: "Cristina Fernández",
+        2014: "Cristina Fernández",
+        2015: "Cristina Fernández",
         2016: "Mauricio Macri",
         2017: "Mauricio Macri",
         2018: "Mauricio Macri",
@@ -218,17 +218,15 @@ def generar_grafico_en_memoria(datos):
     ticks_y = range(tick_inicio, tick_fin + 50, 50)
     plt.yticks(ticks_y, fontsize=12, color='white')
 
-    # Configurar etiquetas de eje X
-    plt.xticks(años, fontsize=12, color='white')
+    # Configurar etiquetas de eje X (eliminamos los años del eje)
+    plt.xticks([], [])
 
-    # Agregar nombres de presidentes en dos líneas debajo de cada año
+    # Agregar nombres de presidentes debajo de cada año
     for año in años:
         presidente = presidentes.get(año, "N/A")
         nombre, apellido = presidente.split(" ", 1) if " " in presidente else (presidente, "")
-        plt.text(año, rango_min - (margen * 0.4), nombre, fontsize=10, color='white',
-                 ha='center', va='top', rotation=90)
-        plt.text(año, rango_min - (margen * 0.6), apellido, fontsize=10, color='white',
-                 ha='center', va='top', rotation=90)
+        plt.text(año, rango_min - (margen * 0.5), f"{año}\n{nombre}\n{apellido}", 
+                 fontsize=10, color='white', ha='center', va='top')
 
     # Rejilla
     plt.grid(color='gray', linestyle='--', linewidth=0.5, alpha=0.5)
