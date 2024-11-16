@@ -150,6 +150,25 @@ def traducir_fecha(fecha):
 def generar_grafico_en_memoria(datos):
     """Genera un gráfico visualmente moderno para los últimos 10 años de riesgo país."""
     
+    # Lista de presidentes por año (ajusta según los datos reales)
+    presidentes = {
+        2013: "Cristina F. de K.",
+        2014: "Cristina F. de K.",
+        2015: "Cristina F. de K.",
+        2016: "Mauricio Macri",
+        2017: "Mauricio Macri",
+        2018: "Mauricio Macri",
+        2019: "Mauricio Macri",
+        2020: "Alberto Fernández",
+        2021: "Alberto Fernández",
+        2022: "Alberto Fernández",
+        2023: "Alberto Fernández",
+        2024: "Javier Milei",
+        2025: "Javier Milei",
+        2026: "Javier Milei",
+        2027: "Javier Milei",
+    }
+
     # Ordenar los datos por año
     datos_ordenados = sorted(datos, key=lambda x: x[0])
     años = [d[0].year for d in datos_ordenados]
@@ -195,7 +214,6 @@ def generar_grafico_en_memoria(datos):
     plt.ylim(rango_min, rango_max)
 
     # Configurar los ticks del eje Y
-    # Calculamos ticks en múltiplos de 50 dentro del rango
     tick_inicio = math.floor(min_valor / 50) * 50
     tick_fin = math.ceil(max_valor / 50) * 50
     ticks_y = range(tick_inicio, tick_fin + 50, 50)
@@ -203,6 +221,12 @@ def generar_grafico_en_memoria(datos):
 
     # Configurar etiquetas de eje X
     plt.xticks(años, fontsize=12, color='white')
+
+    # Agregar nombres de presidentes debajo de cada año
+    for año in años:
+        presidente = presidentes.get(año, "N/A")
+        plt.text(año, rango_min - (margen * 0.3), presidente, fontsize=10, color='white',
+                 ha='center', va='top', rotation=90)
 
     # Rejilla
     plt.grid(color='gray', linestyle='--', linewidth=0.5, alpha=0.5)
@@ -229,6 +253,7 @@ def generar_grafico_en_memoria(datos):
     plt.close()
     buffer.seek(0)  # Volver al inicio del buffer
     return buffer
+    
 def obtener_datos_historicos_para_grafico():
     """Obtiene los datos históricos necesarios para el gráfico."""
     historico = leer_historico_riesgo_pais()
@@ -357,7 +382,7 @@ while True:
     dia_actual = ahora.weekday()  # 0 = Lunes, 6 = Domingo
 
     # Publicar gráfico los sábados a las 19:30
-    if dia_actual == 5 and hora_actual.hour == 15 and 26 <= hora_actual.minute <= 31 and not grafico_posteado:
+    if dia_actual == 5 and hora_actual.hour == 15 and 31 <= hora_actual.minute <= 36 and not grafico_posteado:
         postear_grafico()
         grafico_posteado = True
         
