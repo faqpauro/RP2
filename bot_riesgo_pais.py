@@ -8,6 +8,7 @@ from firebase_admin import credentials, firestore
 import os
 import matplotlib.pyplot as plt
 from io import BytesIO
+from datetime import datetime, timedelta
 
 # Definir las credenciales usando las variables de entorno
 firebase_cred = {
@@ -270,7 +271,7 @@ while True:
     dia_actual = ahora.weekday()  # 0 = Lunes, 6 = Domingo
 
     # Publicar gráfico los sábados a las 19:30
-    if dia_actual == 5 and hora_actual.hour == 14 and 15 <= hora_actual.minute <= 20 and not grafico_posteado:
+    if dia_actual == 5 and hora_actual.hour == 14 and 20 <= hora_actual.minute <= 25 and not grafico_posteado:
         postear_grafico()
         grafico_posteado = True
         
