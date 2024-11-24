@@ -249,7 +249,7 @@ def generar_grafico_en_memoria(datos):
     ax.xaxis.label.set_visible(False)  # Ocultar texto del eje X
 
     # Posición fija para los nombres de presidentes debajo del gráfico
-    posicion_presidentes = rango_min - (margen * 0.8)  # Mayor separación
+    posicion_presidentes = rango_min - (margen * 1.2)  # Mayor separación
 
     # Agregar nombres de presidentes debajo de cada año
     for año in años:
@@ -429,7 +429,7 @@ while True:
     dia_actual = ahora.weekday()  # 0 = Lunes, 6 = Domingo
 
     # Publicar gráfico los sábados a las 19:30
-    if dia_actual == 5 and hora_actual.hour == 19 and 30 <= hora_actual.minute <= 35 and not grafico_posteado:
+    if dia_actual == 6 and hora_actual.hour == 17 and 12 <= hora_actual.minute <= 17 and not grafico_posteado:
         postear_grafico()
         grafico_posteado = True
         
