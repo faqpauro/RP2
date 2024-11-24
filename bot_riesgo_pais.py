@@ -78,6 +78,20 @@ def leer_historico_riesgo_pais():
         historico.append((datetime.strptime(fecha, '%d-%m-%Y'), valor))
     return historico
 
+def leer_valor_ultimo_dia_mes_anterior():
+    """Lee el valor del último día del mes anterior desde Firebase."""
+    doc_ref = db.collection('riesgo_pais').document('ultimo_dia_mes_anterior')
+    doc = doc_ref.get()
+    if doc.exists:
+        return doc.to_dict().get('valor')
+    return None
+
+def guardar_valor_ultimo_dia_mes_anterior(valor):
+    """Guarda el valor del último día del mes actual en Firebase."""
+    doc_ref = db.collection('riesgo_pais').document('ultimo_dia_mes_anterior')
+    doc_ref.set({'valor': valor})
+    print(f"Valor del último día del mes actual guardado: {valor}")
+
 def guardar_valor_riesgo_pais(valor):
     doc_ref = db.collection('riesgo_pais').document('ultimo_valor')
     doc_ref.set({'valor': valor})
@@ -470,19 +484,74 @@ def postear_resumen_diario():
         client.create_tweet(text=tweet)
         print(f"Tweet resumen diario enviado: {tweet}")
 
+def postear_resumen_mensual():
+    """Postea un resumen mensual del cambio del riesgo país."""
+    hoy = datetime.now(pytz.timezone('America/Argentina/Buenos_Aires'))
+    valor_anterior = leer_valor_ultimo_dia_mes_anterior()  # Valor del mes anterior
+    valor_actual = leer_ultimo_valor_guardado()  # Valor actual (último día del mes)
+
+    if valor_anterior is None or valor_actual is None:
+        print("⚠️ No hay datos suficientes para el resumen mensual.")
+        return
+
+    # Calcular variación
+    diferencia = valor_actual - valor_anterior
+    porcentaje_cambio = calcular_porcentaje_cambio(valor_actual, valor_anterior)
+
+    # Determinar si subió o bajó
+    movimiento = f"💪 Bajó {abs(diferencia)} puntos ⬇️" if diferencia < 0 else f"😭 Subió {diferencia} puntos ⬆️"
+
+    # Buscar el mejor valor desde el inicio del mes
+    historico = leer_historico_riesgo_pais()
+    mejor_fecha, mejor_valor = obtener_mejor_valor_desde_fecha(valor_actual, historico)
+
+    # Construir el texto del resumen
+    mes_anio = hoy.strftime('%B %Y').capitalize()
+    texto = (
+        f"🔥🔥 RESUMEN {mes_anio.upper()} 🔥🔥\n\n"
+        f"📉 Riesgo País: {valor_actual}\n"
+        f"{movimiento}\n"
+        f"📊 Variación porcentual: {porcentaje_cambio:.2f}%\n"
+    )
+
+    if mejor_fecha:
+        mejor_fecha_str = mejor_fecha.strftime('%d/%m/%Y')
+        texto += f"🏆 Mejor desde {mejor_fecha_str} ({mejor_valor})\n"
+
+    texto += "🇦🇷 #RiesgoPaís #Argentina"
+
+    # Publicar en Twitter
+    client.create_tweet(text=texto)
+    print(f"Tweet resumen mensual enviado: {texto}")
+
+    # Guardar el valor actual como el último día del mes
+    guardar_valor_ultimo_dia_mes_anterior(valor_actual)
+
 # Bucle principal
 actualizado_hoy = False
 resumen_diario_posteado = False
 grafico_posteado = False
+resumen_mensual_posteado = False
 
 while True:
     # Obtener la hora y día actual en la zona horaria de Buenos Aires
     ahora = datetime.now(pytz.timezone('America/Argentina/Buenos_Aires'))
     hora_actual = ahora.time()
     dia_actual = ahora.weekday()  # 0 = Lunes, 6 = Domingo
+    #ultimo_dia_mes = (ahora + timedelta(days=1)).day == 1 # Verificar si es el último día del mes
+    ultimo_dia_mes = ((datetime(2024, 11, 30) + timedelta(days=1)).day == 1)
+    
+    # Publicar resumen mensual el último día del mes a las 22:00
+    if ultimo_dia_mes and hora_actual.hour == 18 and 24 <= hora_actual.minute <= 29 and not resumen_mensual_posteado:
+        postear_resumen_mensual()
+        resumen_mensual_posteado = True
 
+    # Resetear indicador al inicio de un nuevo mes
+    if ahora.day == 1 and hora_actual.hour == 0:
+        resumen_mensual_posteado = False
+    
     # Publicar gráfico los sábados a las 19:30
-    if dia_actual == 6 and hora_actual.hour == 17 and 51 <= hora_actual.minute <= 56 and not grafico_posteado:
+    if dia_actual == 6 and hora_actual.hour == 20 and 0 <= hora_actual.minute <= 5 and not grafico_posteado:
         postear_grafico()
         grafico_posteado = True
         
