@@ -324,8 +324,8 @@ def obtener_datos_historicos_simulados_para_grafico():
 
 def postear_grafico():
     """Genera y postea un gráfico con los datos históricos de riesgo país."""
-    # datos = obtener_datos_historicos_para_grafico()
-    datos = obtener_datos_historicos_simulados_para_grafico()
+    datos = obtener_datos_historicos_para_grafico()
+    # datos = obtener_datos_historicos_simulados_para_grafico()
     if not datos:
         print("No hay suficientes datos para generar el gráfico.")
         return
@@ -429,7 +429,7 @@ while True:
     dia_actual = ahora.weekday()  # 0 = Lunes, 6 = Domingo
 
     # Publicar gráfico los sábados a las 19:30
-    if dia_actual == 6 and hora_actual.hour == 17 and 16 <= hora_actual.minute <= 21 and not grafico_posteado:
+    if dia_actual == 6 and hora_actual.hour == 17 and 24 <= hora_actual.minute <= 29 and not grafico_posteado:
         postear_grafico()
         grafico_posteado = True
         
