@@ -286,19 +286,27 @@ def generar_grafico_en_memoria(datos):
     
 def obtener_datos_historicos_para_grafico():
     """Obtiene los datos históricos necesarios para el gráfico."""
-    historico = leer_historico_riesgo_pais()
+    historico = leer_historico_riesgo_pais()  # Datos del historial (fecha y valor)
     hoy = datetime.now(pytz.timezone('America/Argentina/Buenos_Aires'))
     
     datos = []
-    for año in range(hoy.year - 10, hoy.year + 1):
-        fecha_objetivo = datetime(hoy.year, hoy.month, hoy.day)
-        while fecha_objetivo.year == año:
+    for año in range(hoy.year - 10, hoy.year + 1):  # Iterar sobre los últimos 10 años
+        fecha_objetivo = datetime(año, hoy.month, hoy.day)  # Usar el año de la iteración
+        
+        while fecha_objetivo.year == año:  # Asegurarse de no salir del año actual en la iteración
             # Buscar el valor más cercano para la fecha
             valor = next((v for f, v in historico if f.date() == fecha_objetivo.date()), None)
             if valor is not None:
                 datos.append((fecha_objetivo, valor))
-                break
+                break  # Salir del bucle si se encuentra un valor
+            
+            # Si no hay valor para esta fecha, retroceder un día
             fecha_objetivo -= timedelta(days=1)
+        
+        # Si no se encontró ningún valor para todo el año, agregar un dato faltante
+        if not any(d[0].year == año for d in datos):
+            print(f"⚠️ No se encontraron datos para el año {año}")
+            datos.append((datetime(año, 1, 1), None))  # Marcar como vacío si no hay datos
     
     return datos
 
@@ -429,7 +437,7 @@ while True:
     dia_actual = ahora.weekday()  # 0 = Lunes, 6 = Domingo
 
     # Publicar gráfico los sábados a las 19:30
-    if dia_actual == 6 and hora_actual.hour == 17 and 24 <= hora_actual.minute <= 29 and not grafico_posteado:
+    if dia_actual == 6 and hora_actual.hour == 17 and 36 <= hora_actual.minute <= 41 and not grafico_posteado:
         postear_grafico()
         grafico_posteado = True
         
