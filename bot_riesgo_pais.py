@@ -223,13 +223,31 @@ def generar_grafico_en_memoria(datos):
     plt.gcf().set_facecolor('#2b2b2b')  # Fondo completo
 
     # Línea de riesgo país
-    plt.plot(años, valores, marker='o', color='#FF5733', linestyle='-', linewidth=3, label="Riesgo País")
+    # Dibujar la línea de riesgo país con colores dinámicos
+    # Parte izquierda en verde
+    plt.plot(años[:len(años)//2 + 1], valores[:len(años)//2 + 1], marker='o', color='#28a745', linestyle='-', linewidth=3, label="Riesgo País (bajó)")
 
-    # Sombreado suave debajo de la línea
-    plt.fill_between(años, valores, color='#FF5733', alpha=0.1)
+    # Parte derecha en rojo
+    plt.plot(años[len(años)//2:], valores[len(años)//2:], marker='o', color='#dc3545', linestyle='-', linewidth=3, label="Riesgo País (subió)")
+
+    # Dibujar líneas verdes o rojas dependiendo del cambio de valor
+    for i in range(1, len(años)):
+        color = '#28a745' if valores[i] < valores[i - 1] else '#dc3545'  # Verde si bajó, rojo si subió
+        plt.plot(años[i-1:i+1], valores[i-1:i+1], marker='o', color=color, linestyle='-', linewidth=3)
+
+    # Sombreado dinámico debajo de la línea según cambio de valor
+    for i in range(1, len(años)):
+        color_sombra = '#28a745' if valores[i] < valores[i - 1] else '#dc3545'  # Verde si bajó, rojo si subió
+        plt.fill_between(
+            años[i-1:i+1],  # Rango del eje X
+            valores[i-1:i+1],  # Valores del eje Y
+            rango_min,  # Extiende hasta el límite inferior del gráfico
+            color=color_sombra, 
+            alpha=0.2  # Transparencia para no sobrecargar el diseño
+        )
 
     # Título moderno
-    plt.title(f"Riesgo País ({rango_años})\n({fecha_actual} de cada año)",
+    plt.title(f"Riesgo País ({rango_años})\n(Valores del {fecha_actual} de cada año)",
               fontsize=18, fontweight='bold', color='white')
 
     # Etiquetas del eje Y
@@ -263,16 +281,43 @@ def generar_grafico_en_memoria(datos):
 
     # Agregar etiquetas con los valores en cada punto
     for i, (año, valor) in enumerate(zip(años, valores)):
-        if año == año_actual:
-            plt.annotate(f"{valor}", (años[i], valores[i]),
-                         textcoords="offset points", xytext=(0, 10), ha='center',
-                         fontsize=14, color='#FFC300',  # Resaltar en amarillo brillante
-                         bbox=dict(boxstyle="round,pad=0.3", edgecolor='#FF5733', facecolor='#2b2b2b', alpha=0.9))
+        if i == 0:  # Primer valor con solo borde, sin fondo
+            plt.annotate(
+                f"{int(valor)}",
+                (años[i], valores[i]),
+                textcoords="offset points",
+                xytext=(0, 10),
+                ha='center',
+                fontsize=12,
+                color='white',
+                bbox=dict(boxstyle="round,pad=0.3", edgecolor='gray', facecolor='none', alpha=1)  # Solo borde
+            )
+        elif año == años[-1]:  # Último año (valor actual)
+            # Recuadro especial para el valor actual con borde amarillo
+            color_recuadro = '#28a745' if valores[i] < valores[i - 1] else '#dc3545'  # Verde si bajó, rojo si subió
+            plt.annotate(
+                f"{int(valor)}",
+                (años[i], valores[i]),
+                textcoords="offset points",
+                xytext=(0, 10),
+                ha='center',
+                fontsize=14,
+                color='white',
+                bbox=dict(boxstyle="round,pad=0.3", edgecolor='#FFC300', facecolor=color_recuadro, linewidth=2, alpha=0.6)  # Más transparente
+            )
         else:
-            plt.annotate(f"{valor}", (años[i], valores[i]),
-                         textcoords="offset points", xytext=(0, 10), ha='center',
-                         fontsize=12, color='white',
-                         bbox=dict(boxstyle="round,pad=0.3", edgecolor='gray', facecolor='#2b2b2b', alpha=0.8))
+            # Recuadro para otros valores basado en si subió o bajó
+            color_recuadro = '#28a745' if valores[i] < valores[i - 1] else '#dc3545'
+            plt.annotate(
+                f"{int(valor)}",
+                (años[i], valores[i]),
+                textcoords="offset points",
+                xytext=(0, 10),
+                ha='center',
+                fontsize=12,
+                color='white',
+                bbox=dict(boxstyle="round,pad=0.3", edgecolor=color_recuadro, facecolor=color_recuadro, alpha=0.6)  # Más transparente
+            )
 
     # Leyenda moderna
     plt.legend(fontsize=12, loc='upper left', facecolor='#2b2b2b', edgecolor='white', labelcolor='white')
@@ -437,7 +482,7 @@ while True:
     dia_actual = ahora.weekday()  # 0 = Lunes, 6 = Domingo
 
     # Publicar gráfico los sábados a las 19:30
-    if dia_actual == 6 and hora_actual.hour == 17 and 36 <= hora_actual.minute <= 41 and not grafico_posteado:
+    if dia_actual == 6 and hora_actual.hour == 17 and 51 <= hora_actual.minute <= 56 and not grafico_posteado:
         postear_grafico()
         grafico_posteado = True
         
