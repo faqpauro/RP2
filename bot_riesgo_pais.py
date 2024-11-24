@@ -505,10 +505,18 @@ def postear_resumen_mensual():
     historico = leer_historico_riesgo_pais()
     mejor_fecha, mejor_valor = obtener_mejor_valor_desde_fecha(valor_actual, historico)
 
-    # Construir el texto del resumen
-    mes_anio = hoy.strftime('%B %Y').capitalize()
+    # Traducción del mes al español
+    meses_es = {
+        "January": "Enero", "February": "Febrero", "March": "Marzo", "April": "Abril",
+        "May": "Mayo", "June": "Junio", "July": "Julio", "August": "Agosto",
+        "September": "Septiembre", "October": "Octubre", "November": "Noviembre", "December": "Diciembre"
+    }
+    mes_actual = hoy.strftime('%B')  # Nombre del mes en inglés
+    mes_actual_es = meses_es.get(mes_actual, mes_actual)  # Traducción al español
+    año_actual = hoy.year
+
     texto = (
-        f"🔥🔥 RESUMEN {mes_anio.upper()} 🔥🔥\n\n"
+        f"🔥🔥 RESUMEN {mes_actual_es.upper()} {año_actual} 🔥🔥\n\n"
         f"📉 Riesgo País: {valor_actual}\n"
         f"{movimiento}\n"
         f"📊 Variación porcentual: {porcentaje_cambio:.2f}%\n"
@@ -542,7 +550,7 @@ while True:
     ultimo_dia_mes = ((datetime(2024, 11, 30) + timedelta(days=1)).day == 1)
     
     # Publicar resumen mensual el último día del mes a las 22:00
-    if ultimo_dia_mes and hora_actual.hour == 18 and 24 <= hora_actual.minute <= 29 and not resumen_mensual_posteado:
+    if ultimo_dia_mes and hora_actual.hour == 18 and 32 <= hora_actual.minute <= 37 and not resumen_mensual_posteado:
         postear_resumen_mensual()
         resumen_mensual_posteado = True
 
