@@ -546,11 +546,10 @@ while True:
     ahora = datetime.now(pytz.timezone('America/Argentina/Buenos_Aires'))
     hora_actual = ahora.time()
     dia_actual = ahora.weekday()  # 0 = Lunes, 6 = Domingo
-    #ultimo_dia_mes = (ahora + timedelta(days=1)).day == 1 # Verificar si es el último día del mes
-    ultimo_dia_mes = ((datetime(2024, 11, 30) + timedelta(days=1)).day == 1)
+    ultimo_dia_mes = (ahora + timedelta(days=1)).day == 1 # Verificar si es el último día del mes
     
     # Publicar resumen mensual el último día del mes a las 22:00
-    if ultimo_dia_mes and hora_actual.hour == 18 and 32 <= hora_actual.minute <= 37 and not resumen_mensual_posteado:
+    if ultimo_dia_mes and hora_actual.hour == 22 and 10 <= hora_actual.minute <= 15 and not resumen_mensual_posteado:
         postear_resumen_mensual()
         resumen_mensual_posteado = True
 
@@ -558,8 +557,8 @@ while True:
     if ahora.day == 1 and hora_actual.hour == 0:
         resumen_mensual_posteado = False
     
-    # Publicar gráfico los sábados a las 19:30
-    if dia_actual == 6 and hora_actual.hour == 20 and 0 <= hora_actual.minute <= 5 and not grafico_posteado:
+    # Publicar gráfico los Domingos a las 19:30
+    if dia_actual == 6 and hora_actual.hour == 19 and 30 <= hora_actual.minute <= 35 and not grafico_posteado:
         postear_grafico()
         grafico_posteado = True
         
